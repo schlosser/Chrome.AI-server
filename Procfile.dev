@@ -1,0 +1,2 @@
+web: gunicorn develop:app --log-file -
+PYTHONUNBUFFERED=true

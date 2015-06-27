@@ -1,0 +1,8 @@
+include
+*.pyc
+.Python
+venv/
+staticfiles
+tokens.py
+.env
+*.tar.gz
