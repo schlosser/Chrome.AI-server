@@ -1,4 +1,6 @@
-
+from wit_helper import *
 
 def train(training_json):
-    pass  # TODO
+
+    expression = training_json.get('expression')
+    intents = training_json.get('intents')
