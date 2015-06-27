@@ -8,6 +8,14 @@ server_access_token = 'AM6WLX35JI3LRSB74VTQEUTYKHJPEXFP'
 headers = {'Authorization': 'Bearer ' + server_access_token}
 
 
+def get_all_intents():
+    pass  # TODO
+
+
+def get_all_entities():
+    pass  # TODO
+
+
 def get_intent_from_text(text):
 
     encoded_text = urllib.quote(text)
@@ -95,6 +103,7 @@ def add_values_to_entity(entity_id, values):
 
 
 if __name__ == '__main__':
+    pass
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')
     # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
