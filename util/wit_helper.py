@@ -149,4 +149,4 @@ if __name__ == '__main__':
     # ]
     #print add_values_to_existing_entity('hog_taste', values)
 
-    print get_all_entities()
+    #print get_all_entities()
