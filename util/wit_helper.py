@@ -53,7 +53,7 @@ def add_expressions_to_existing_intent(intent, expressions):
 
 def check_if_intent_exists(intent):
 
-    response = requests.get('https://api.wit.ai/intents?v=20150627&q=', headers = headers)
+    response = requests.get('https://api.wit.ai/intents?v=20150627', headers = headers)
     response_json = json.loads(response.text)
 
     for existing_intent in response_json:
@@ -91,15 +91,41 @@ def create_entity(entity_id, values=None):
 
     return response.text
 
-def add_values_to_entity(entity_id, values):
+def add_value_to_existing_entity(entity_id, value):
+    """Value is a dictionary:
+
+    {
+        'value':'Paris',
+        'expressions':['Paris','City of Light','Capital of France']
+    }
+    """
+    print json.dumps(value)
+
+    post_url = 'https://api.wit.ai/entities/' + entity_id + '/values?v=20150627'
+    response = requests.post(post_url, headers=headers, data=json.dumps(value))
+
+    return response.text
+
+
+def add_values_to_existing_entity(entity_id, values):
+    """Value is a dictionary:
+
+    {
+        'value':'Paris',
+        'expressions':['Paris','City of Light','Capital of France']
+    }
+    """
 
     payload = {
-        'id': entity_id,
-        'value': values
+        'values': values #a list of value objects
     }
 
     post_url = 'https://api.wit.ai/entities/' + entity_id + '?v=20150627'
-    response = requests.post(post_url, headers=headers, data=json.dumps(payload))
+    response = requests.put(post_url, headers=headers, data=json.dumps(payload))
+
+    return response.text
+
+
 
 
 if __name__ == '__main__':
@@ -109,5 +135,14 @@ if __name__ == '__main__':
     # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
     # create_entity('hog_taste', [{ "value":"Delicious",
          #"expressions":["Delicious", "Tasty", "Bacony"]}])
+    # values = [
+    #     {"value":"Paris",
+    #      "expressions":["Paris","City of Light","Capital of France"]
+    #     },
+    #     { "value":"Delicious",
+    #      "expressions":["Delicious", "Tasty", "Bacony"]
+    #     }
+    # ]
+    #print add_values_to_existing_entity('hog_taste', values)
 
-
+    print get_all_intents()
