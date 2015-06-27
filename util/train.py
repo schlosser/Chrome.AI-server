@@ -1,4 +1,4 @@
 
 
-def train(expression, confidence, intents):
-	pass  # TODO
+def train(training_json):
+    pass  # TODO
