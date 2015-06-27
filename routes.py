@@ -1,7 +1,7 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, redirect, url_for
 from werkzeug.exceptions import BadRequest
 from util.json_response import json_success, json_error_message
-from util.wit_helper import get_all_intents, get_all_entities
+from util.wit_helper import get_all_intents, get_all_entities, wipe_data
 from util.train import train
 
 api = Blueprint('api', __name__)
@@ -26,6 +26,12 @@ def new_training_data():
                                   error_data=e.description)
 
     return json_success('Training data added successfully')
+
+
+@api.route('/_/fire')
+def kill_it_with_fire():
+    wipe_data()
+    return redirect(url_for('view_training_data'))
 
 
 @api.route('/training_data')

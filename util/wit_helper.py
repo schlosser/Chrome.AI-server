@@ -134,6 +134,10 @@ def add_values_to_existing_entity(entity_id, values):
     return response.text
 
 
+def wipe_data():
+    """Wipe all data in wit.ai
+    """
+
 
 
 if __name__ == '__main__':
