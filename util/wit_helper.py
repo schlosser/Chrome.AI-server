@@ -9,11 +9,15 @@ headers = {'Authorization': 'Bearer ' + server_access_token}
 
 
 def get_all_intents():
-    pass  # TODO
+
+    response = requests.get('https://api.wit.ai/intents?v=20150627', headers = headers)
+    return json.dumps(response.text)
 
 
 def get_all_entities():
-    pass  # TODO
+
+    response = requests.get('https://api.wit.ai/entities?v=20150627', headers = headers)
+    return json.dumps(response.text)
 
 
 def get_intent_from_text(text):
@@ -145,4 +149,4 @@ if __name__ == '__main__':
     # ]
     #print add_values_to_existing_entity('hog_taste', values)
 
-    print get_all_intents()
+    print get_all_entities()
