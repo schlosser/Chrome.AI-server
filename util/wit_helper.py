@@ -55,23 +55,50 @@ def check_if_intent_exists(intent):
     return False
 
 
-def create_entity(id, value=None):
+def create_entity(entity_id, values=None):
+    """Values is an array of dictionaries with values that map to expressions.
+    Example:
 
+    [
+        { "value":"Paris",
+         "expressions":["Paris", "City of Light", "Capital of France"]
+        },
+        { "value":"New York",
+         "expressions":["New York", "Big Apple", "Best city"]
+        }
+    ]
+
+    """
     payload = {
-        'name': intent,
-        'expressions': [
-            {'body' : expression}
-        ]
+        'id': entity_id,
     }
 
+    if values:
+        payload['values'] = values
+
+
+    print payload
     post_url = 'https://api.wit.ai/entities?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(payload))
 
     return response.text
+
+def add_values_to_entity(entity_id, values):
+
+    payload = {
+        'id': entity_id,
+        'value': values
+    }
+
+    post_url = 'https://api.wit.ai/entities/' + entity_id + '?v=20150627'
+    response = requests.post(post_url, headers=headers, data=json.dumps(payload))
 
 
 if __name__ == '__main__':
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')
     # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
-    print check_if_intent_exists('walk_the_cow')
+    # create_entity('hog_taste', [{ "value":"Delicious",
+         #"expressions":["Delicious", "Tasty", "Bacony"]}])
+
+
