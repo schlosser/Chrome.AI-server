@@ -28,13 +28,18 @@ def get_intent_from_text(text):
     return response.text
 
 
-def add_new_intent_with_expressions(intent, expression):
+def add_new_intent_with_expressions(intent, expressions):
     "Expressions is a list of strings to add to the given intent"
+
+    expressions_list = []
+
+    for expression in expressions:
+        to_append = {'body': expression}
+        expressions_list.append(to_append)
+
     payload = {
         'name': intent,
-        'expressions': [
-            {'body' : expression}
-        ]
+        'expressions': expressions_list
     }
 
     response = requests.post('https://api.wit.ai/intents?v=20150627', headers=headers, data=json.dumps(payload))
@@ -89,7 +94,6 @@ def create_entity(entity_id, values=None):
         payload['values'] = values
 
 
-    print payload
     post_url = 'https://api.wit.ai/entities?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(payload))
 
@@ -150,3 +154,10 @@ if __name__ == '__main__':
     #print add_values_to_existing_entity('hog_taste', values)
 
     #print get_all_entities()
+
+    #print add_new_intent_with_expressions('walk_the_snake', ['walk my snake'])
+
+    #print check_if_intent_exists('{"data": {"innerText": "Login", "selector": "div#foo"}, "intentType": "click"}')
+
+    #create_entity("<#$(#COOL")
+    print add_expressions_to_existing_intent('walk_the_zeebra', ['walk my animal safari'])
