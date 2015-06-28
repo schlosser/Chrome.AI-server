@@ -17,14 +17,12 @@ def train(training_dict):
 
     intent = serialize.to_string(intents)
 
-
-    print wh.check_if_intent_exists(intent)
     if wh.check_if_intent_exists(intent):
         wh.add_expressions_to_existing_intent(intent, [expression])
     else:
         wh.add_new_intent_with_expressions(intent, [expression])
 
-    wh.add_state_to_intent(intent, state)
+    wh.add_states_to_intent(intent, state)
 
 if __name__ == '__main__':
 

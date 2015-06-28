@@ -160,8 +160,22 @@ def wipe_data():
         if not entity.startswith('wit$'):
             wipe_entity(entity)
 
+def get_states_from_intent(intent):
+
+    request_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
+    response = requests.get(request_url, headers = headers)
+
+    meta = response.json().get('meta')
+    if meta:
+        return meta.get('states', [])
+
+    return []
+
 def add_states_to_intent(intent, states):
     """States is an array"""
+
+    states += get_states_from_intent(intent)
+    states = list(set(states))
 
     payload = {
         'meta': {
@@ -185,7 +199,12 @@ def show_expressions_for_intent(intent):
 
 if __name__ == '__main__':
     pass
-    #print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
+    # wipe_data()
+    # add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
+    # add_states_to_intent('walk_the_hog', ['new.ycombinator.com'])
+    # add_states_to_intent('walk_the_hog', ['maj.com'])
+    # add_states_to_intent('walk_the_hog', ['maj.com'])
+    # print get_states_from_intent('walk_the_hog')
    # print show_expressions_for_intent('walk_the_hog')
     #print add_state_to_intent('walk_the_hog')
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
