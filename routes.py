@@ -3,6 +3,7 @@ from werkzeug.exceptions import BadRequest
 from util.json_response import json_success, json_error_message
 from util.wit_helper import get_all_intents, get_all_entities, wipe_data
 from util.train import train
+import json
 
 api = Blueprint('api', __name__)
 NO_JSON = "Found no JSON.  Did you set Content-Type: application/json?"
@@ -31,12 +32,15 @@ def new_training_data():
 @api.route('/_/fire')
 def kill_it_with_fire():
     wipe_data()
-    return redirect(url_for('view_training_data'))
+    return redirect(url_for('.view_training_data'))
 
 
 @api.route('/training_data')
 def view_training_data():
+    intents = get_all_intents()
+    entities = get_all_entities()
+
     return json_success({
-        'intents': get_all_intents(),
-        'entities': get_all_entities()
+        'intents': intents,
+        'entities': entities
     })
