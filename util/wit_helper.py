@@ -11,13 +11,13 @@ headers = {'Authorization': 'Bearer ' + server_access_token}
 def get_all_intents():
 
     response = requests.get('https://api.wit.ai/intents?v=20150627', headers = headers)
-    return json.dumps(response.text)
+    return response.json()
 
 
 def get_all_entities():
 
     response = requests.get('https://api.wit.ai/entities?v=20150627', headers = headers)
-    return json.dumps(response.text)
+    return response.json()
 
 
 def get_intent_from_text(text):
@@ -134,10 +134,31 @@ def add_values_to_existing_entity(entity_id, values):
     return response.text
 
 
+def wipe_intent(name):
+
+    delete_url = 'https://api.wit.ai/intents/' + name + '?v=20150627'
+    requests.delete(delete_url, headers=headers)
+
+
+def wipe_entity(name):
+
+    delete_url = 'https://api.wit.ai/entities/' + name + '?v=20150627'
+    requests.delete(delete_url, headers=headers)
+
+
 def wipe_data():
     """Wipe all data in wit.ai
     """
 
+    intents = get_all_intents()
+    entities = get_all_entities()
+
+    for intent in intents:
+        wipe_intent(intent.get('name'))
+
+    for entity in entities:
+        if not entity.startswith('wit$'):
+            wipe_entity(entity)
 
 
 if __name__ == '__main__':
@@ -164,4 +185,5 @@ if __name__ == '__main__':
     #print check_if_intent_exists('{"data": {"innerText": "Login", "selector": "div#foo"}, "intentType": "click"}')
 
     #create_entity("<#$(#COOL")
-    print add_expressions_to_existing_intent('walk_the_zeebra', ['walk my animal safari'])
+    #print add_expressions_to_existing_intent('walk_the_zeebra', ['walk my animal safari'])
+    #print wipe_data()
