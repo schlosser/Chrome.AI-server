@@ -219,18 +219,16 @@ def add_entities_to_intent(intent, expressions):
 def tag_expression_with_entities(expression_body, entities, intent_id):
 
     for entity_id, value in entities.iteritems():
-
         if not entity_id in get_all_entities():
             create_entity(entity_id, [{'value': value, 'expressions': [value]}])
 
         expression = [exp for exp in show_expressions_for_intent(intent_id)['expressions'] if exp['body'] == expression_body][0]
 
         entity = get_entity_by_id(entity_id)
+        tag_expression_with_entity(expression, entity, entity_id, value, intent_id)
 
-        tag_expression_with_entity(expression, entity, value, intent_id)
 
-
-def tag_expression_with_entity(expression, entity, value, intent_id):
+def tag_expression_with_entity(expression, entity, entity_id, value, intent_id):
     sync_headers = {
         'Authorization': 'Bearer U3HCPMX47IB7QHFAYR7EK7LGOCY3ESVE',
         'Origin': 'https://wit.ai',
@@ -247,10 +245,8 @@ def tag_expression_with_entity(expression, entity, value, intent_id):
         'data': {
             'semantic':{
                 'entities': [{
-                    'start': expression['body'].find(value),
-                    'end': expression['body'].find(value) + len(value),
                     'value': value,
-                    'wisp': entity['name']  #'558f9714-538e-4f98-aec0-2400e80bcafc' # wisp of the entity
+                    'wisp': entity['id'] #'558f9714-538e-4f98-aec0-2400e80bcafc' # wisp of the entity
                 }],
                 'intent': intent_id  # '87b45c4b-daf0-4b0e-a57a-c74160aa4291' # intent to associate with
             },
@@ -262,6 +258,26 @@ def tag_expression_with_entity(expression, entity, value, intent_id):
         'type': 'added-semantic'
     }]
 
+    response = requests.put('https://api.wit.ai/sync', headers=sync_headers, data=json.dumps(data))
+
+    data = [{
+        'data': {
+            'semantic':{
+                'entities': [{
+                    'start': expression['body'].find(value),
+                    'end': expression['body'].find(value) + len(value),
+                    'value': value,
+                    'wisp': entity['id'] #'558f9714-538e-4f98-aec0-2400e80bcafc' # wisp of the entity
+                }],
+                'intent': intent_id  # '87b45c4b-daf0-4b0e-a57a-c74160aa4291' # intent to associate with
+            },
+            'text': {
+                'id': expression['id'],  # '558f93fd-a2d7-451d-af81-72367e672bee', #
+                'text': expression['body']
+            }
+        },
+        'type': 'added-semantic'
+    }]
     response = requests.put('https://api.wit.ai/sync', headers=sync_headers, data=json.dumps(data))
 
 
