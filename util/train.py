@@ -6,37 +6,50 @@ import serialize
 def train(training_dict):
 
     expression = training_dict.get('expression')
-    intents = training_dict.get('intents')
+    actions = training_dict.get('intents')
     state = training_dict.get('state')
 
     if expression is None:
         raise BadRequest(description='bad expression')
 
-    if intents is None:
+    if actions is None:
         raise BadRequest(description='bad intent')
 
-    intent = serialize.to_string(intents)
 
-    if wh.check_if_intent_exists(intent):
-        wh.add_expressions_to_existing_intent(intent, [expression])
+    serialized_intent = serialize.to_string(actions)
+
+    if wh.check_if_intent_exists(serialized_intent):
+        intent_id = wh.add_expressions_to_existing_intent(serialized_intent, [expression])[0]['intent_id']
     else:
-        wh.add_new_intent_with_expressions(intent, [expression])
+        intent_id = wh.add_new_intent_with_expressions(serialized_intent, [expression])['intents'][0]['id']
 
-    wh.add_states_to_intent(intent, state)
+    wh.add_states_to_intent(serialized_intent, state)
+
+    for action in actions:
+        if action['intentType'] == 'submit':
+            entities = dict((serialize.to_string(form_input['selector']), form_input['value']) for form_input in action['data']['inputs'])
+            wh.tag_expression_with_entities(expression, entities, intent_id)
+
 
 if __name__ == '__main__':
 
     data = {
-        'expression': 'click the login button',
+        'expression': 'Google Search for cats',
         'intents': [
             {
-                'intentType': 'click',
+                'intentType': 'submit',
                 'data': {
-                    'selector': 'div#foo',
-                    'innerText': 'Login'
+                    'selector': 'form#foo',
+                    'inputs': [
+                         {
+                            'selector': 'form#foo input[type="text"][name="q"]',
+                            'value': 'cats'
+                         }
+                    ]
                 }
             }
-        ]
+        ],
+        'state': ['google.com']
     }
 
     train(data)

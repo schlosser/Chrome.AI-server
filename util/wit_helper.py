@@ -44,7 +44,7 @@ def add_new_intent_with_expressions(intent, expressions):
 
     response = requests.post('https://api.wit.ai/intents?v=20150627', headers=headers, data=json.dumps(payload))
 
-    return response.text
+    return response.json()
 
 
 def add_expressions_to_existing_intent(intent, expressions):
@@ -54,10 +54,10 @@ def add_expressions_to_existing_intent(intent, expressions):
     for expression in expressions:
         payload.append({'body': expression})
 
-    post_url = 'https://api.wit.ai/intents/' + intent + '/expressions' + '?v=20150627'
+    post_url = 'https://api.wit.ai/intents/' + intent + '/expressions?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(payload))
 
-    return response.text
+    return response.json()
 
 
 def check_if_intent_exists(intent):
@@ -97,7 +97,17 @@ def create_entity(entity_id, values=None):
     post_url = 'https://api.wit.ai/entities?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(payload))
 
-    return response.text
+    if not response.ok:
+        print response.text
+    return response.json()
+
+def get_entity_by_id(entity_id):
+    """Gets an entity by id."""
+    response = requests.get('https://api.wit.ai/entities/' + entity_id +'?v=20150627', headers=headers)
+    if not response.ok:
+        print 'text: ', response.text
+    return response.json()
+
 
 def add_value_to_existing_entity(entity_id, value):
     """Value is a dictionary:
@@ -112,7 +122,7 @@ def add_value_to_existing_entity(entity_id, value):
     post_url = 'https://api.wit.ai/entities/' + entity_id + '/values?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(value))
 
-    return response.text
+    return response.json()
 
 
 def add_values_to_existing_entity(entity_id, values):
@@ -131,7 +141,7 @@ def add_values_to_existing_entity(entity_id, values):
     post_url = 'https://api.wit.ai/entities/' + entity_id + '?v=20150627'
     response = requests.put(post_url, headers=headers, data=json.dumps(payload))
 
-    return response.text
+    return response.json()
 
 
 def wipe_intent(name):
@@ -192,26 +202,113 @@ def add_states_to_intent(intent, states):
 def show_expressions_for_intent(intent):
 
     request_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
-    response = requests.get(request_url, headers = headers)
+    response = requests.get(request_url, headers=headers)
+    if not response.ok:
+        print response.text
 
     return response.json()
 
 
+def add_entities_to_intent(intent, expressions):
+
+    post_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
+    response = requests.put(post_url, headers=headers, data=json.dumps(expressions))
+
+    return response.text
+
+
+def tag_expression_with_entities(expression_body, entities, intent_id):
+
+    for entity_id, value in entities.iteritems():
+        print entity_id
+        # print get_all_entities()
+        if not entity_id in get_all_entities():
+            print create_entity(entity_id, [{'value': value, 'expressions': [value]}])
+
+        expression = [exp for exp in show_expressions_for_intent(intent_id)['expressions'] if exp['body'] == expression_body][0]
+
+        entity = get_entity_by_id(entity_id)
+
+        tag_expression_with_entity(expression, entity, value, intent_id)
+
+
+def tag_expression_with_entity(expression, entity, value, intent_id):
+    sync_headers = {
+        'Authorization': 'Bearer U3HCPMX47IB7QHFAYR7EK7LGOCY3ESVE',
+        'Origin': 'https://wit.ai',
+        'Accept-Encoding': 'gzip, deflate, sdch',
+        'Accept-Language': 'en-US,en;q=0.8',
+        'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/43.0.2357.124 Safari/537.36',
+        'Content-Type': 'application/json',
+        'Accept': 'application/vnd.wit.20150405+json',
+        # 'Referer': 'https://wit.ai/benthehenten/speakeasy/intents/walk_the_hog',
+        'Connection': 'keep-alive',
+        'X-Wit-Instance': '558ee6bf-0b74-450c-858c-08dad79ff974'
+    }
+    data = [{
+        'data': {
+            'semantic':{
+                'entities': [{
+                    'start': expression['body'].find(value),
+                    'end': expression['body'].find(value) + len(value),
+                    'value': value,
+                    'wisp': entity['name']  #'558f9714-538e-4f98-aec0-2400e80bcafc' # wisp of the entity
+                }],
+                'intent': intent_id  # '87b45c4b-daf0-4b0e-a57a-c74160aa4291' # intent to associate with
+            },
+            'text': {
+                'id': expression['id'],  # '558f93fd-a2d7-451d-af81-72367e672bee', #
+                'text': expression['body']
+            }
+        },
+        'type': 'added-semantic'
+    }]
+
+    response = requests.put('https://api.wit.ai/sync', headers=sync_headers, data=json.dumps(data))
+    print json.dumps(response.json())
+
+
 if __name__ == '__main__':
-    pass
-    # wipe_data()
-    # add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
+    #add_new_intent_with_expressions('walk_the_hog', ['walk my cool hog'])
+
+    # print create_entity('animal')
+    # print show_expressions_for_intent('walk_the_hog')
+
+
+    # expressions = [
+    #     {
+    #         'body': 'go walk my hog',
+    #         'entities': [{
+    #             'body': 'hog',
+    #             'wisp': '558f9714-538e-4f98-aec0-2400e80bcafc',
+    #             'value': 'hog',
+    #             'start': 11,
+    #             'end': 14,
+    #             'name': 'animal',
+    #             'lang': 'en',
+    #             'subentities': []
+    #         }]
+    #     }
+    # ]
+    # print add_entities_to_intent('walk_the_hog', expressions)
+
+
+
+    # print show_expressions_for_intent('walk_the_hog')
+
+    #wipe_data()
+    print get_intent_from_text('google search for dogs')
+    # print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
     # add_states_to_intent('walk_the_hog', ['new.ycombinator.com'])
     # add_states_to_intent('walk_the_hog', ['maj.com'])
     # add_states_to_intent('walk_the_hog', ['maj.com'])
     # print get_states_from_intent('walk_the_hog')
-   # print show_expressions_for_intent('walk_the_hog')
+    # print show_expressions_for_intent('walk_the_hog')
     #print add_state_to_intent('walk_the_hog')
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')
-    # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
-    # create_entity('hog_taste', [{ "value":"Delicious",
-         #"expressions":["Delicious", "Tasty", "Bacony"]}])
+    # print add_expressions_to_existing_intent('walk_the_hog', ['wash the hog'])
+
     # values = [
     #     {"value":"Paris",
     #      "expressions":["Paris","City of Light","Capital of France"]
@@ -222,7 +319,7 @@ if __name__ == '__main__':
     # ]
     #print add_values_to_existing_entity('hog_taste', values)
 
-    #print get_all_entities()
+    # print get_all_entities()
 
     #print add_new_intent_with_expressions('walk_the_snake', ['walk my snake'])
 

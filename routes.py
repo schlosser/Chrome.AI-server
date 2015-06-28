@@ -38,13 +38,7 @@ def kill_it_with_fire():
 
 @api.route('/training_data')
 def view_training_data():
-    intents = get_all_intents()
-    entities = get_all_entities()
-
-    return json_success({
-        'intents': intents,
-        'entities': entities
-    })
+  return json_success(show_expressions_for_intent('walk_the_hog'))
 
 @api.route('/intent/<intent>/expressions')
 def show_expressions(intent):
