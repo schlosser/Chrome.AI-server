@@ -30,8 +30,14 @@ REPLACEMENTS = [
 ]
 
 
-def to_string(dict):
-    json_string = json.dumps(dict, sort_keys=True)
+def to_string(data):
+    json_string = json.dumps({'data': data}, sort_keys=True)
     for char, encoding in REPLACEMENTS:
         json_string = json_string.replace(char, encoding)
     return 'ENC' + json_string
+
+
+def from_string(json_string):
+    for char, encoding in REPLACEMENTS:
+        json_string = json_string.replace(encoding, char)
+    return json.loads(json_string[3:])['data']
