@@ -16,8 +16,14 @@ def train(training_dict):
     if actions is None:
         raise BadRequest(description='bad intent')
 
+    entities = {}
+    for action in actions:
+        if action['intentType'] == 'submit':
+            entities = dict((serialize.to_string(form_input['selector']), form_input['value']) for \
+                form_input in action['data']['inputs'])
 
     serialized_intent = serialize.to_string(actions)
+    expression = entify_expression(expression, entities)
 
     if wh.check_if_intent_exists(serialized_intent):
         intent_id = wh.add_expressions_to_existing_intent(serialized_intent, [expression])[0]['intent_id']
@@ -28,15 +34,13 @@ def train(training_dict):
 
     for action in actions:
         if action['intentType'] == 'submit':
-            entities = dict((serialize.to_string(form_input['selector']), form_input['value']) for form_input in action['data']['inputs'])
-            expression = entify_expression(expression, entities)
             wh.tag_expression_with_entities(expression, entities, intent_id)
 
 
 if __name__ == '__main__':
 
     data = {
-        'expression': 'Google Search for cats',
+        'expression': 'Google Search for cats and dog',
         'intents': [
             {
                 'intentType': 'submit',
@@ -46,6 +50,11 @@ if __name__ == '__main__':
                          {
                             'selector': 'form#foo input[type="text"][name="q"]',
                             'value': 'cats'
+                         },
+
+                         {
+                            'selector': 'form#foo input[type="text"][name="dogs"]',
+                            'value': 'dog'
                          }
                     ]
                 }
