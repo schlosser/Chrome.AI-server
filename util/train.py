@@ -7,7 +7,7 @@ def train(training_dict):
 
     expression = training_dict.get('expression')
     intents = training_dict.get('intents')
-    context = training_dict.get('context')
+    state = training_dict.get('state')
 
     if expression is None:
         raise BadRequest(description='bad expression')
@@ -17,17 +17,14 @@ def train(training_dict):
 
     intent = serialize.to_string(intents)
 
-    print intent
 
     print wh.check_if_intent_exists(intent)
     if wh.check_if_intent_exists(intent):
-        print "adding 0ld"
         wh.add_expressions_to_existing_intent(intent, [expression])
     else:
-        print "adding new"
         wh.add_new_intent_with_expressions(intent, [expression])
 
-
+    wh.add_state_to_intent(intent, state)
 
 if __name__ == '__main__':
 

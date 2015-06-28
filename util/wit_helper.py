@@ -160,11 +160,12 @@ def wipe_data():
         if not entity.startswith('wit$'):
             wipe_entity(entity)
 
-def add_state_to_intent(intent, expressions=None):
+def add_states_to_intent(intent, states):
+    """States is an array"""
 
     payload = {
         'meta': {
-            'states': ['majcom', 'majcity']
+            'states': states
         }
     }
 
@@ -186,7 +187,7 @@ if __name__ == '__main__':
     pass
     #print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
    # print show_expressions_for_intent('walk_the_hog')
-    print add_state_to_intent('walk_the_hog')
+    #print add_state_to_intent('walk_the_hog')
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')
     # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
