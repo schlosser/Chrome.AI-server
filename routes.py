@@ -1,9 +1,10 @@
 from flask import Blueprint, request, redirect, url_for
 from werkzeug.exceptions import BadRequest
 from util.json_response import json_success, json_error_message
-from util.wit_helper import get_all_intents, get_all_entities, wipe_data
+from util.wit_helper import get_all_intents, get_all_entities, wipe_data, show_expressions_for_intent
 from util.train import train
 import json
+from util import serialize
 
 api = Blueprint('api', __name__)
 NO_JSON = "Found no JSON.  Did you set Content-Type: application/json?"
@@ -43,4 +44,22 @@ def view_training_data():
     return json_success({
         'intents': intents,
         'entities': entities
+    })
+
+@api.route('/intent/<intent>/expressions')
+def show_expressions(intent):
+    return json_success({
+        'data': show_expressions_for_intent(intent)
+    })
+
+@api.route('/troy')
+def show_human_data():
+    intents = get_all_intents()
+
+    for intent in intents:
+      intent['expressions'] = show_expressions_for_intent(intent.get('name'))
+      intent['name'] = serialize.from_string(intent.get('name'))
+
+    return json_success({
+        'intents': intents
     })

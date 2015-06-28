@@ -163,18 +163,29 @@ def wipe_data():
 def add_state_to_intent(intent, expressions=None):
 
     payload = {
-        'States': ['maj.com']
+        'meta': {
+            'states': ['majcom', 'majcity']
+        }
     }
 
     post_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
-    response = requests.post(post_url, headers=headers, data=json.dumps(payload))
+    response = requests.put(post_url, headers=headers, data=json.dumps(payload))
 
     return response.text
+
+
+def show_expressions_for_intent(intent):
+
+    request_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
+    response = requests.get(request_url, headers = headers)
+
+    return response.json()
 
 
 if __name__ == '__main__':
     pass
     #print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
+   # print show_expressions_for_intent('walk_the_hog')
     print add_state_to_intent('walk_the_hog')
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')

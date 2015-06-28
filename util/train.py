@@ -7,7 +7,7 @@ def train(training_dict):
 
     expression = training_dict.get('expression')
     intents = training_dict.get('intents')
-    print expression
+    context = training_dict.get('context')
 
     if expression is None:
         raise BadRequest(description='bad expression')
@@ -26,6 +26,7 @@ def train(training_dict):
     else:
         print "adding new"
         wh.add_new_intent_with_expressions(intent, [expression])
+
 
 
 if __name__ == '__main__':
