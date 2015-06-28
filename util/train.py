@@ -1,6 +1,7 @@
 import wit_helper as wh
 from werkzeug.exceptions import BadRequest
 import serialize
+from entify_expression import entify_expression
 
 
 def train(training_dict):
@@ -28,6 +29,7 @@ def train(training_dict):
     for action in actions:
         if action['intentType'] == 'submit':
             entities = dict((serialize.to_string(form_input['selector']), form_input['value']) for form_input in action['data']['inputs'])
+            expression = entify_expression(expression, entities)
             wh.tag_expression_with_entities(expression, entities, intent_id)
 
 
