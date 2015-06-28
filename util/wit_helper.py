@@ -117,7 +117,6 @@ def add_value_to_existing_entity(entity_id, value):
         'expressions':['Paris','City of Light','Capital of France']
     }
     """
-    print json.dumps(value)
 
     post_url = 'https://api.wit.ai/entities/' + entity_id + '/values?v=20150627'
     response = requests.post(post_url, headers=headers, data=json.dumps(value))
@@ -220,10 +219,9 @@ def add_entities_to_intent(intent, expressions):
 def tag_expression_with_entities(expression_body, entities, intent_id):
 
     for entity_id, value in entities.iteritems():
-        print entity_id
-        # print get_all_entities()
+
         if not entity_id in get_all_entities():
-            print create_entity(entity_id, [{'value': value, 'expressions': [value]}])
+            create_entity(entity_id, [{'value': value, 'expressions': [value]}])
 
         expression = [exp for exp in show_expressions_for_intent(intent_id)['expressions'] if exp['body'] == expression_body][0]
 
@@ -265,12 +263,11 @@ def tag_expression_with_entity(expression, entity, value, intent_id):
     }]
 
     response = requests.put('https://api.wit.ai/sync', headers=sync_headers, data=json.dumps(data))
-    print json.dumps(response.json())
 
 
 if __name__ == '__main__':
     #add_new_intent_with_expressions('walk_the_hog', ['walk my cool hog'])
-
+    pass
     # print create_entity('animal')
     # print show_expressions_for_intent('walk_the_hog')
 
@@ -297,7 +294,7 @@ if __name__ == '__main__':
     # print show_expressions_for_intent('walk_the_hog')
 
     #wipe_data()
-    print get_intent_from_text('google search for dogs')
+    #print get_intent_from_text('google search for dogs')
     # print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
     # add_states_to_intent('walk_the_hog', ['new.ycombinator.com'])
     # add_states_to_intent('walk_the_hog', ['maj.com'])

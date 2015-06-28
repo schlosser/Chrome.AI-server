@@ -23,7 +23,6 @@ def new_training_data():
             raise BadRequest(description=NO_JSON)
         train(training_data)
     except BadRequest as e:
-        print e, e.description
         return json_error_message('Failed to parse JSON data',
                                   error_data=e.description)
 
@@ -33,7 +32,7 @@ def new_training_data():
 @api.route('/_/fire')
 def kill_it_with_fire():
     wipe_data()
-    return redirect(url_for('.view_training_data'))
+    return redirect(url_for('.show_human_data'))
 
 
 @api.route('/training_data')
