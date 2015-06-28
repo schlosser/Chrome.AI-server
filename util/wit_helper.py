@@ -160,9 +160,22 @@ def wipe_data():
         if not entity.startswith('wit$'):
             wipe_entity(entity)
 
+def add_state_to_intent(intent, expressions=None):
+
+    payload = {
+        'States': ['maj.com']
+    }
+
+    post_url = 'https://api.wit.ai/intents/' + intent + '?v=20150627'
+    response = requests.post(post_url, headers=headers, data=json.dumps(payload))
+
+    return response.text
+
 
 if __name__ == '__main__':
     pass
+    #print add_new_intent_with_expressions('walk_the_hog', ['walk my hog, son!'])
+    print add_state_to_intent('walk_the_hog')
     #add_new_intent_expression_mapping('click_logout_button', 'log me out')
     #get_intent_from_text('log me out')
     # add_expressions_to_existing_intent('clean_the_hog', ['wash the hog'])
