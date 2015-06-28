@@ -261,10 +261,9 @@ def tag_expression_with_entities(expression_body, entities, intent_id):
             'wisp': entity['id'] #'558f9714-538e-4f98-aec0-2400e80bcafc' # wisp of the entity
         })
 
+    clear = False
     for entity_id, value in entities.iteritems():
-        clear = False
         if not entity_id in get_all_entities():
-            clear = True
             create_entity(entity_id, [{'value': value, 'expressions': [value]}])
 
         expression = [exp for exp in show_expressions_for_intent(intent_id)['expressions'] if exp['body'] == expression_body][0]
@@ -272,6 +271,7 @@ def tag_expression_with_entities(expression_body, entities, intent_id):
         entity = get_entity_by_id(entity_id)
 
         tag_expression_with_entity(expression, entity, value, intent_id, clear)
+        clear = True
 
 
     allData = [{

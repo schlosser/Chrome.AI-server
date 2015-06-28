@@ -45,7 +45,19 @@ def entify_expression(expression, entities):
     '28th': '28',
     '29th': '29',
     '30th': '30',
-    '31th': '31'
+    '31th': '31',
+    'January': 'Jan',
+    'February': 'Feb',
+    'March': 'Mar',
+    'April': 'Apr',
+    'May': 'May',
+    'June': 'Jun',
+    'July': 'Jul',
+    'August': 'Aug',
+    'September': 'Sep',
+    'October': 'Oct',
+    'November': 'Nov',
+    'December': 'Dec',
     };
 
     for key in mapping.keys():
