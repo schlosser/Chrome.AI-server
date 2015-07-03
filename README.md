@@ -1,4 +1,4 @@
-# SPEAKEASY!!!!!
+# Chrome.AI server
 
 ## Developing
 
